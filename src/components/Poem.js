@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React, {useState} from "react";
 
-const poemAPI = "http://localhost:8004/poems";
+function Poem({title, content, author, id, poemData, setPoemData}) {
 
-function Poem({poem, removePoem, addToFavorites}) {
-  const {title, content, author} = poem;
-  const [isRead, setIsRead] = useState(false)
+  const[show, setShow] = useState(false)
 
-  function onDeleteClick(e) {
-    e.preventDefault();
-    fetch(`${poemAPI}/${poem.id}`, {
-      method: "DELETE",
-    });
-    removePoem(poem);
+  function handleClick(){
+    setShow(!show)
+  }
+
+  function handleDelete(){
+  fetch (`http://localhost:8004/poems/${id}`, {
+      method: "DELETE"
+  })
+  .then((res) => res.json())
+  .then( () => {
+    const newData = poemData.filter((data) => data.id !== id)
+    setPoemData(newData)
+  })
   }
 
   return (
@@ -19,19 +24,10 @@ function Poem({poem, removePoem, addToFavorites}) {
       <h3>{title}</h3>
       <p>{content}</p>
       <p>
-        <strong>- By {author}</strong>
+        <strong>- {author}</strong>
       </p>
-      <button onClick={() => setIsRead(!isRead)} >
-        Mark as {isRead ? "unread" : "read" }
-      </button>
-
-      <button onClick={onDeleteClick} >
-        Delete
-      </button>
-
-      <button onClick={() => addToFavorites(poem)}>
-        {poem.isFavorite ? "Unfavorite" : "♥ Favorite" }
-      </button>
+      <button onClick= {handleClick}>{show ? "Mark as read" : "Mark as unread"}</button>
+      <button onClick= {handleDelete}>Delete</button>
     </div>
   );
 }
